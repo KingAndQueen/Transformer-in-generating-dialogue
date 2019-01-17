@@ -15,8 +15,8 @@ class Graph():
 			if is_training:
 				self.inpt, self.outpt, self.batch_num = get_batch_data()
 			else:
-				self.inpt = tf.placeholder(tf.int32, shape = (None, pm.maxlen))
-				self.outpt = tf.placeholder(tf.int32, shape = (None, pm.maxlen))
+				self.inpt = tf.placeholder(tf.int32, shape = (pm.batch_size, pm.maxlen))
+				self.outpt = tf.placeholder(tf.int32, shape = (pm.batch_size, pm.maxlen))
 
 			# start with 2(<STR>) and without 3(<EOS>)
 			self.decoder_input = tf.concat((tf.ones_like(self.outpt[:, :1])*2, self.outpt[:, :-1]), -1)
@@ -108,7 +108,7 @@ class Graph():
 
 			# Linear
 			self.logits = tf.layers.dense(self.dec, len(de2idx))
-			self.preds = tf.to_int32(tf.arg_max(self.logits, dimension = -1))
+			self.preds = tf.to_int32(tf.argmax(self.logits, axis = -1))
 			self.istarget = tf.to_float(tf.not_equal(self.outpt, 0))
 			self.acc = tf.reduce_sum(tf.to_float(tf.equal(self.preds, self.outpt)) * self.istarget) / (tf.reduce_sum(self.istarget))
 			tf.summary.scalar('acc', self.acc)

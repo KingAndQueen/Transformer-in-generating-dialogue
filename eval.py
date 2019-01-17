@@ -8,7 +8,11 @@ from data_loader import load_data, load_vocab
 import tensorflow as tf
 import numpy as np
 from nltk.translate.bleu_score import corpus_bleu
-
+import pdb
+import chardet
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 def eval():
 	g = Graph(is_training = False)
@@ -46,6 +50,8 @@ def eval():
 					for source, target, pred in zip(sources, targets, preds):
 						got = " ".join(idx2de[idx] for idx in pred).split("<EOS>")[0].strip()
 						f.write("- Source: {}\n".format(source))
+						# pdb.set_trace()
+						# chardet.detect(target.encode('utf-8'))
 						f.write("- Ground Truth: {}\n".format(target))
 						f.write("- Predict: {}\n\n".format(got))
 						f.flush()

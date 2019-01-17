@@ -3,7 +3,7 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import math
-
+import pdb
 def normalize(inputs,
 			epsilon = 1e-8,
 			scope = "ln",
@@ -91,7 +91,8 @@ def positional_encoding(inputs,
 
 	N, T = inputs.get_shape().as_list()
 	
-   	with tf.variable_scope(scope, reuse=reuse):
+	with tf.variable_scope(scope, reuse=reuse):
+		# pdb.set_trace()
 		position_ind = tf.tile(tf.expand_dims(tf.range(T), 0), [N, 1])
 
 		# First part of the PE function: sin and cos argument
@@ -107,12 +108,12 @@ def positional_encoding(inputs,
 		lookup_table = tf.convert_to_tensor(position_enc)
 
 		if zero_pad:
-		    lookup_table = tf.concat((tf.zeros(shape=[1, num_units]),
+			lookup_table = tf.concat((tf.zeros(shape=[1, num_units]),
 					      lookup_table[1:, :]), 0)
 		outputs = tf.nn.embedding_lookup(lookup_table, position_ind)
 
 		if scale:
-		    outputs = outputs * num_units**0.5
+			outputs = outputs * num_units**0.5
 		
 	return tf.cast(outputs, tf.float32)
 
@@ -230,7 +231,7 @@ def multihead_attention(queries,
 			# like : [[1,0,0]
 			#         [1,2,0]
 			#         [1,2,3]]
-			tril = tf.contrib.linalg.LinearOperatorTriL(diag_vals).to_dense()
+			tril = tf.linalg.LinearOperatorLowerTriangular(diag_vals).to_dense()
 			# shape = [N*h, T_q, T_k]
 			masks = tf.tile(tf.expand_dims(tril, 0), [tf.shape(outputs)[0], 1, 1])
 
